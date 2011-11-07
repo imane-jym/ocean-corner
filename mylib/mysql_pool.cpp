@@ -37,7 +37,7 @@ int mysql_pool::init_add_pool(int key, const char* host, unsigned short port, co
 
 c_mysql_iface *mysql_pool::get_mysql(int key)
 {
-    return m_conn[key];
+    return &m_conn[key]->mysql_conn;
 }
 
 void mysql_pool::clear()

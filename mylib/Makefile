@@ -1,7 +1,7 @@
 XX		= g++
 INCLUDES	= -I./
 LIB		= `mysql_config --libs` 
-FLAGS		= -Wall -ggdb -fPIC -shared
+FLAGS		= -Wall -g -fPIC -shared
 SOURCE		= $(wildcard *.cpp)
 OBJS		= $(patsubst %.cpp, %.o, $(SOURCE))
 TARGET		= ./liboc.so

@@ -5,8 +5,8 @@
 #include <map>
 #include <string>
 
-using namespace std::map;
-using namespace std::string;
+using std::map;
+using std::string;
 
 class mysql_t
 {
@@ -31,3 +31,5 @@ private:
     map<int, mysql_t*> m_conn;
     map<string, mysql_t> m_pool;
 };
+
+#endif
