@@ -44,6 +44,8 @@ public:
     
     //number当前字符匹配的字符串数量， begin匹配的字符串长度-1的数组
     bool one_char_search(const char ch, short **begin = NULL, short *number = NULL);
+    //number当期字符匹配的字符串数量, begin匹配的字符串数组 索引从0开始 [索引位置，长度，... ] 假如number = n,begin数组就有 2n 个元素,return 0: 成功，有关键字， 1：没有关键字， -1：内存错误 
+    int str_search(const char *str, short **begin = NULL, short *number = NULL);
     void end_char_search();
 private:
 
@@ -54,4 +56,7 @@ private:
     //用于存储匹配到的字符串的位置 只用于one_char_search接口
     int m_word_max_length;
     short *m_location_mark;
+
+    short *m_location_mark2;
+    int m_size_mark2;
 };

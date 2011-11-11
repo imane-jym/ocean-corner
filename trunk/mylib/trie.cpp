@@ -25,7 +25,9 @@ trie::trie()
     m_root = NULL;
     m_state = NULL;
     m_location_mark = NULL;
+    m_location_mark2 = NULL;
     m_word_max_length = 0;
+    m_size_mark2 = 0;
 }
 
 trie::~trie()
@@ -45,7 +47,13 @@ trie::~trie()
         free(m_location_mark);
         m_location_mark = NULL;
     }
+    if (m_location_mark2 != NULL)
+    {
+        free(m_location_mark2);
+        m_location_mark2 = NULL;
+    }
     m_word_max_length = 0;
+    m_size_mark2 = 0;
 }
 
 void trie::destroy(trie_node *root)
@@ -169,6 +177,61 @@ bool trie::search(const char *word)
         word++;
     }
     return (location != NULL && location->is_str);
+}
+
+int trie::str_search(const char *str, short **begin, short *number)
+{
+    int flag = 1; 
+    if (m_location_mark2 == NULL)
+    {
+        m_location_mark2 = (short *)malloc(sizeof(short) * 100);
+        if (m_location_mark2 == NULL)
+        {
+            return -1;
+        }
+        memset(m_location_mark2, 0, sizeof(short) * 100);
+        m_size_mark2 = 100;
+    }
+
+    end_char_search();    
+
+    short *temp_len;
+    short temp_number;
+    short num = 0;
+    int i = 0;
+    int j = 0;
+    while(str[i] != '\0')
+    {
+        if (one_char_search(str[i], &temp_len, &temp_number))
+        {
+            while ((num + temp_number) * 2 > m_size_mark2)
+            {
+                m_location_mark2 = (short *)realloc(m_location_mark2, sizeof(short) * m_size_mark2 * 1.5);
+                if (m_location_mark2 == NULL)
+                {
+                    return -1;
+                }
+                m_size_mark2 = m_size_mark2 * 1.5;
+            } 
+            for(j = temp_number - 1; j >= 0; j--)
+            {
+                m_location_mark2[num * 2] = i - temp_len[j]; 
+                m_location_mark2[num * 2 + 1] = temp_len[j] + 1;
+                num++;
+            }
+            flag = 0;
+        } 
+        i++;
+    }
+    if (begin != NULL)
+    {
+        *begin = m_location_mark2;
+    }
+    if (number != NULL)
+    {
+        *number = num;
+    }
+    return flag;
 }
 
 bool trie::one_char_search(const char ch, short **begin, short *number)
