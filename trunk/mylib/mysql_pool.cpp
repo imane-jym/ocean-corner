@@ -15,23 +15,56 @@ int mysql_pool::init_add_pool(int key, const char* host, unsigned short port, co
     char buffer[300];
     sprintf(buffer, "%s_%u_%s_%s_%s", host, port, db_name, user, passwd);
     temp = buffer;
+
+    if (m_conn.find(key) != m_conn.end())
+    {
+        return -2;
+    }
+
     map<string, mysql_t>::iterator it = m_pool.find(temp);
     if (it == m_pool.end())
     {
-        c_mysql_iface a;
         m_pool[temp];
         if (0 != m_pool[temp].mysql_conn.init(host, port, db_name, user, passwd, charset))
         {
             m_pool.erase(temp);
             return -1;
         }
-        m_conn[key] = &m_pool[temp];
+    }
+
+
+    m_conn[key] = &(it->second);
+    (it->second).index++;
+    return 0;
+}
+
+int mysql_pool::del_conn(int key)
+{
+    map<int, mysql_t* >::iterator it = m_conn.find(key);
+    if (it != m_conn.end())
+    {
+        it->second->index -= 1;
+        m_conn.erase(it);
+        map<string, mysql_t>::iterator it = m_pool.begin();
+        map<string, mysql_t>::iterator it_temp;
+        while(it != m_pool.end())
+        {
+            if((it->second).index == 0)
+            {
+                it_temp = it; 
+                it++;
+                m_pool.erase(it_temp);
+            }
+            else
+            {
+                it++;
+            }
+        }
         return 0;
     }
     else
     {
-        m_conn[key] = &(it->second);
-        return 0;
+        return 1;
     }
 }
 
