@@ -7,7 +7,6 @@
 
 #include <mysql/mysql.h>
 
-// latest added by baron for error string bug
 #define MYSQL_MAX_ERROR_BUF_LEN 1024
 
 #define MYSQL_MAX_HOST_BUF_LEN 128
