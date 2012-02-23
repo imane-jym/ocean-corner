@@ -9,7 +9,6 @@
  *  compiler   gcc4.1.2
  *  platform   Linux
  *
- *  copyright:  TaoMee, Inc. ShangHai CN. All rights reserved.
  *
  *============================================================
  */
