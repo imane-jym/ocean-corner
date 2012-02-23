@@ -268,7 +268,7 @@ int c_mysql_iface::select_first_row_f(MYSQL_ROW* row, unsigned long **length, co
 int c_mysql_iface::select_first_row(MYSQL_ROW* row, unsigned long **length, const char* sql_buffer)
 {
     /// 检查参数
-    if (sql_buffer == NULL || m_sql_buffer == NULL) {
+    if (sql_buffer == NULL) {
         set_err(MYSQL_IFACE_E_PARAMETER, "NULL sql fmt str(%p). sql_buffer NULL", sql_buffer);
         return -1;
     }
@@ -280,7 +280,7 @@ int c_mysql_iface::select_first_row(MYSQL_ROW* row, unsigned long **length, cons
     }
 
     if (mysql_query(db, sql_buffer) != 0) {
-        set_err(MYSQL_IFACE_E_MYSQL_API, "Mysql query error: %s\n\tSQL: %s", mysql_error(db), m_sql_buffer);
+        set_err(MYSQL_IFACE_E_MYSQL_API, "Mysql query error: %s\n\tSQL: %s", mysql_error(db), sql_buffer);
         return -1;
     }
 
@@ -292,7 +292,7 @@ int c_mysql_iface::select_first_row(MYSQL_ROW* row, unsigned long **length, cons
 
     m_res = mysql_store_result(db);
     if (m_res == NULL) {
-        set_err(MYSQL_IFACE_E_MYSQL_API, "mysql_store_result error: %s\n\tSQL: %s", mysql_error(db), m_sql_buffer);
+        set_err(MYSQL_IFACE_E_MYSQL_API, "mysql_store_result error: %s\n\tSQL: %s", mysql_error(db), sql_buffer);
         return -1;
     }
 
@@ -341,6 +341,35 @@ int c_mysql_iface::select_next_row(MYSQL_ROW *row, unsigned long **length)
 }
 
 /**
+ *@brief 执行SQL语句
+
+ *@param sql_buffer  字符串
+
+ *@return 失败返回－1， 成功返回SQL(UPDATE,INSERT,DELETE)语句影响的行数,或SELECT到数据的行数。
+ */
+int c_mysql_iface::execsql(const char* sql_buffer)
+{
+    /// 检查参数
+    if (sql_buffer == NULL) {
+        set_err(MYSQL_IFACE_E_PARAMETER, "NULL sql fmt str. sql_buffer NULL");
+        return -1;
+    }
+
+    /// 得到数据库的连接
+    MYSQL* db = get_conn();
+    if (db == NULL) {
+        return -1;
+    }
+
+    if (mysql_query(db, sql_buffer) != 0) {
+        set_err(MYSQL_IFACE_E_MYSQL_API, "Mysql query error: %s\n\tSQL: %s", mysql_error(db), sql_buffer);
+        return -1;
+    }
+
+    return mysql_affected_rows(db);
+}
+
+/**
  *@brief 执行SQL语句, 参数格式同printf()
 
  *@param sql_fmt  字符串格式
@@ -348,7 +377,7 @@ int c_mysql_iface::select_next_row(MYSQL_ROW *row, unsigned long **length)
 
  *@return 失败返回－1， 成功返回SQL(UPDATE,INSERT,DELETE)语句影响的行数,或SELECT到数据的行数。
  */
-int c_mysql_iface::execsql(const char* sql_fmt, ...)
+int c_mysql_iface::execsql_f(const char* sql_fmt, ...)
 {
     /// 检查参数
     if (sql_fmt == NULL || m_sql_buffer == NULL) {

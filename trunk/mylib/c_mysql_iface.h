@@ -126,7 +126,18 @@ class c_mysql_iface
          *
          * @return >=0 更新语句影响的行数; <0 失败
          */
-        int execsql(const char* sql_fmt, ...);
+        int execsql_f(const char* sql_fmt, ...);
+
+        /**
+         * @brief 执行指定的 UPDATE 或 DELETE 等更新语句，并返回影响的行数
+         *
+         * @param sql_buffer SQL 语句字符串
+         *
+         * @note 这个函数用于执行UPDATE 及 DELETE 等更新语句，类似 SELECT 等需要获取数据的情况，请试用 select_first_row 函数
+         *
+         * @return >=0 更新语句影响的行数; <0 失败
+         */
+        int execsql(const char* sql_buffer);
 
         /**
          * @brief 获取最后一次操作的错误码
